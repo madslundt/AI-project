@@ -108,7 +108,7 @@ var draw = {
 
         canvas.addEventListener('click', function(evt) {
             var mousePos = draw.getMousePos(canvas, evt);
-            var message = 'X: ' + parseInt((mousePos.x / incX) + x_min - add - (radius / incX * 2)) + ', Y: ' + parseInt((mousePos.y / incY) + y_min - add - (radius / incX * 2));
+            var message = 'X: ' + parseInt((mousePos.x / incX) + x_min - add - (radius / incX * 2)) + ', Y: ' + parseInt((mousePos.y / incY) + y_min - add - (radius / incY * 2));
             $('.infobar .clickposition').text(message);
         }, false);
 
