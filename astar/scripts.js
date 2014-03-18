@@ -1,10 +1,39 @@
 $(function() {
     $('#submit').click(function() {
-        parseMapToJson($('#map').val());
+        parseMap($('#map').val());
     });
 });
-
-function parseMapToJson(text) {
+/**
+ * Parse a map into a list
+ * @param  string text
+ *
+ * 
+[
+    {
+        "start": [
+            10,
+            20
+        ],
+        "name": "Vesterbrogade",
+        "end": [
+            30,
+            40
+        ]
+    },
+    {
+        "start": [
+            20,
+            20
+        ],
+        "name": "Vesterbrogade",
+        "end": [
+            30,
+            30
+        ]
+    }
+]
+ */
+function parseMap(text) {
     var split = text.split('\n');
     var ret_json = [];
     $.each(split, function(key, value) {
@@ -24,6 +53,7 @@ function parseMapToJson(text) {
             ret_json.push(street);
         }
     });
+    console.log(ret_json);
 }
 
 var astar = {
@@ -46,5 +76,14 @@ var astar = {
         var closedset = [];
         var openset = [];
         var came_from = [];
+    },
+    neighbors: function(node, map) {
+        var ret_neighbors = [];
+        for (var i = 0; i < map.length; i++) {
+            if (map[i].start == node) {
+                ret_neighbors.push(map[i]);
+            }
+        }
+        return ret_neighbors;
     }
 }
