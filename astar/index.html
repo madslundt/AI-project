@@ -49,11 +49,25 @@
 			.infobar .info {
 				float: right;
 			}
+			.select {
+				float: right;
+			}
 		</style>
 		<div class="container" id="container">
 			<textarea id="map"></textarea>
 			<input type="button" id="submit" value="Submit" />
 			<input type="button" id="draw" value="Draw map" />
+			<div class="select">
+				<span>Start: </span>
+				<select class="start_select" id="start_select">
+					<option>No nodes</option>
+				</select>
+				<span>Goal: </span>
+				<select class="goal_select" id="goal_select">
+					<option>No nodes</option>
+				</select>
+				<input type="button" id="findPath" value="Find path" />
+			</div>
 			<canvas id="mapCanvas"></canvas>
 		</div>
 		<div class="infobar">
