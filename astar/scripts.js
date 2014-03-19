@@ -131,12 +131,12 @@ var astar = {
         var ret = false;
         var count = 0;
         var current;
-        var currentIndex = 0;
+        var currentIndex;
         while (openset.length > 0) {
-            current = openset[0];
-            for (var i = 0; i < openset.length; i++) { // Finding lowest f value in openset.
+            currentIndex = 0;
+            current = openset[currentIndex];
+            for (var i = 1; i < openset.length; i++) { // Finding lowest f value in openset.
                 if (openset[i].f < current.f) {
-
                     current = openset[i];
                     currentIndex = i;
                 }
@@ -144,7 +144,7 @@ var astar = {
             if (debug) {
                 console.log('\n::::::::::::::::' + count + ':::::::::::::::');
                 console.log('--------------Current node-----------------');
-                console.log("(" + current.node[0] + ", " + current.node[1] + ") \t g: " + current.g + " \t f: " + current.f + ' \t h: ' + this.heuristic(current.node, goal));
+                console.log("(" + current.node[0] + ", " + current.node[1] + ") \t f: " + current.f + " \t g: " + current.g + ' \t h: ' + this.heuristic(current.node, goal));
             }
             // Checking if we are at the goal
             if (current.node[0] == goal[0] && current.node[1] == goal[1]) {
@@ -155,7 +155,7 @@ var astar = {
             }
 
             // Remove current from openset.
-            openset.splice(openset[currentIndex], 1);
+            openset.splice(currentIndex, 1);
             closedset.push(current);
             var neighbors = this.neighbors(current, map);
             if (debug) {
@@ -165,22 +165,32 @@ var astar = {
             for (i = 0; i < neighbors.length; i++) {
                 if (this.isNodeInList(neighbors[i].node, closedset)) {
                     if (debug) {
-                        console.log('Neighbor is already visited (' + neighbors[i].node[0] + ', ' + neighbors[i].node[1] + ')');
+                        console.log('\n(' + neighbors[i].node[0] + ', ' + neighbors[i].node[1] + ') \t Neighbor is already visited\n');
                     }
                     continue;
                 }
-                var tentative_g_score = current.g + this.distanceBetween(current, neighbors[i]);
 
-                if (!this.isNodeInList(neighbors[i].node, openset) || tentative_g_score < neighbors[i].g) { // If neighbor is not in openset
-                    current_path.push(current);
-                    neighbors[i].g = tentative_g_score;
+                var tentativeBool = false;
+                if (!this.isNodeInList(neighbors[i].node, openset)) {
+                    openset.push(neighbors[i]);
+                    var tentative_g_score = current.g + this.distanceBetween(current, neighbors[i]);
                     neighbors[i].f = neighbors[i].g + this.heuristic(neighbors[i].node, goal);
+                    tentativeBool = true;
+                    if (debug) {
+                        console.log('(' + neighbors[i].node[0] + ', ' + neighbors[i].node[1] + ')');
+                        console.log('pushed to openset.\n');
+                    }
 
-                    if (!this.isNodeInList(neighbors[i].node, openset)) {
-                        openset.push(neighbors[i]);
-                        if (debug) {
-                            console.log('(' + neighbors[i].node[0] + ', ' + neighbors[i].node[1] + ') \t f: ' + neighbors[i].f + ' \t g: ' + neighbors[i].g + ' \t h: ' + this.heuristic(neighbors[i].node, goal) + '\t\t pushed to openset');
-                        }
+                } else if (tentative_g_score < neighbors[i].g) { // If neighbor is not in openset
+                    tentativeBool = true;
+                }
+
+                if (tentativeBool) {
+                    neighbors[i].g = tentative_g_score;
+                    current_path.push(current);
+                    if (debug) {
+                        console.log('(' + neighbors[i].node[0] + ', ' + neighbors[i].node[1] + ') \t f: ' + neighbors[i].f + ' \t g: ' + neighbors[i].g + ' \t h: ' + this.heuristic(neighbors[i].node, goal));
+                        console.log('added to currentpath.\n');
                     }
                 }
             }
@@ -194,9 +204,13 @@ var astar = {
         } // End while
 
         if (ret) {
-            console.log("Path found");
+            console.log("\nPath found");
             if (debug) {
                 console.log(current_path);
+                for (var i = 0; i < current_path.length; i++) {
+                    console.log("(" + current_path[i].node[0] + ", " + current_path[i].node[1] + ") \t f: " + current_path[i].f + " \t g: " + current_path[i].g + ' \t h: ' + this.heuristic(current_path[i].node, goal));
+                }
+
             }
             draw.drawRoute(current_path, map);
         } else {
