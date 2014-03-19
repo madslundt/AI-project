@@ -224,8 +224,8 @@ var astar = {
         return d1 + d2;
     },
     distanceBetween: function(start, goal) {
-      var x = Math.abs(start.node[0] - goal.node[0]);
-      var y = Math.abs(start.node[1] - goal.node[1]);
+      var x = start.node[0] - goal.node[0];
+      var y = start.node[1] - goal.node[1];
       
       return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
       
@@ -280,6 +280,7 @@ var draw = {
         context.moveTo(fromPoint.x, fromPoint.y);
         context.lineTo(toPoint.x, toPoint.y);
         context.fillStyle = '#000';
+      	context.strokeStyle = '#000';
         context.closePath();
         context.lineWidth = 1;
         context.stroke();
@@ -289,6 +290,7 @@ var draw = {
         context.lineTo((toPoint.x - unitDx * arrowHeadSize + unitDy * arrowHeadSize), (toPoint.y - unitDy * arrowHeadSize - unitDx * arrowHeadSize));
         context.lineTo(toPoint.x, toPoint.y);
         context.fillStyle = '#000';
+      	context.strokeStyle = '#000';
         context.fill();
         context.stroke();
 
@@ -343,7 +345,7 @@ var draw = {
             context.beginPath();
             context.arc(x1, y1, radius, 0, 2 * Math.PI, false);
             context.arc(x2, y2, radius, 0, 2 * Math.PI, false);
-            context.fillStyle = 'black';
+            context.fillStyle = '#000';
             context.fill();
             context.closePath();
 
