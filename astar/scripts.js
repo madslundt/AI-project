@@ -114,7 +114,7 @@ var parse = {
         $('.goal_select').html('');
         for (var i = 0; i < map.length; i++) {
             $('.start_select').append('<option value="' + i + '">(' + map[i].start.x + ', ' + map[i].start.y + ')</option>');
-            $('.goal_select').append('<option value="' + i + '">(' + map[i].start.x + ', ' + map[i].start.y + ')</option>');
+            $('.goal_select').append('<option value="' + i + '">(' + map[i].end.x + ', ' + map[i].end.y + ')</option>');
         }
         if (map.length < 1) {
             $('.start_select').html('<option>No nodes</option>');
