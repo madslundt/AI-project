@@ -11,42 +11,47 @@ $(function() {
     $('#findPath').click(function() {
         var start = document.getElementById('start_select');
         var startval = start.options[start.selectedIndex].value;
-        console.log('From: ' + map[startval].start);
+        console.log("From: ");
+        console.log(map[startval].start);
 
         var goal = document.getElementById('goal_select');
         var goalval = goal.options[goal.selectedIndex].value;
-        console.log('To: ' + map[goalval].start);
-        astar.search(map[startval].start, map[goalval].start, map, true);
+        console.log("To: ");
+        console.log(map[goalval].end);
+        console.log(map);
+        astar.search(map[startval], map[goalval].start, map, false);
     });
 
     canvas.width = document.getElementById('container').clientWidth;
     canvas.height = document.getElementById('container').clientHeight;
 
-    document.getElementById('upload').addEventListener('change', readSingleFile, false);
+    var fileupload = document.getElementById('upload');
 
-    function readSingleFile(evt) {
-        //Retrieve the first (and only!) File from the FileList object
-        var f = evt.target.files[0]; 
+    fileupload.addEventListener('change', function(e) {
+        var file = fileupload.files[0];
+        var textType = /text.*/;
 
-        if (f) {
-            var r = new FileReader();
-            r.onload = function(e) { 
-                var contents = e.target.result;
-                if (map = parse.parseMap(contents)) {
-                    console.log(map);
+        if (file.type.match(textType)) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                var contents = reader.result;
+                map = parse.parseMap(contents);
+                if (map) {
                     draw.drawMap(canvas, map);
                 } else {
                     console.log('Wrong file');
                     alert("Wrong file");
                 }
-            };
-            r.readAsText(f);
-        } else { 
-            alert("Failed to load file");
-        }
-    }
-});
+            }
 
+            reader.readAsText(file);
+        } else {
+            console.log('File not supported');
+            alert('File not supported');
+        }
+    });
+});
 
 
 /**
@@ -114,7 +119,7 @@ var parse = {
         $('.goal_select').html('');
         for (var i = 0; i < map.length; i++) {
             $('.start_select').append('<option value="' + i + '">(' + map[i].start.x + ', ' + map[i].start.y + ')</option>');
-            $('.goal_select').append('<option value="' + i + '">(' + map[i].end.x + ', ' + map[i].end.y + ')</option>');
+            $('.goal_select').append('<option value="' + i + '">(' + map[i].start.x + ', ' + map[i].start.y + ')</option>');
         }
         if (map.length < 1) {
             $('.start_select').html('<option>No nodes</option>');
@@ -124,27 +129,18 @@ var parse = {
 };
 
 var astar = {
-    init: function(start, map) {
-        var ret_index = -1;
-        for (var i = 0; i < map.length; i++) {
-            if (map[i].start == start) {
-                ret_index = i;
-            }
-        }
-
-        return ret_index;
-    },
     /**
      * [search description]
-     * @param  [x, y] start [description]
+     * @param  Node-object start [description]
      * @param  [x, y] end   [description]
      * @param  [map] map   [description]
      */
     search: function(start, goal, map, debug) {
-        console.clear();
-        console.log('------------------------Find path---------------------------');
-        var start_index = astar.init(start, map);
-        if (start_index == -1) {
+        if (debug) {
+            console.clear();
+            console.log('------------------------Find path---------------------------');
+        }
+        if (map.length < 1) {
             console.log('error');
             return;
         }
@@ -152,7 +148,8 @@ var astar = {
         var closedset = [];
         var openset = [];
         var node = {
-            "node": start,
+            "name": start.name,
+            "node": start.start,
             "g": 0,
             "f": this.heuristic(start, goal),
             "from": null
@@ -183,7 +180,7 @@ var astar = {
             }
 
             
-
+            console.log(current);
             if (debug) {
                 console.log('\n::::::::::::::::' + count + ':::::::::::::::');
                 console.log('--------------Current node-----------------');
@@ -250,6 +247,7 @@ var astar = {
 
     },
     pathTo: function(node){
+        console.log(node);
         var curr = node;
         var path = [];
         while(curr) {
@@ -259,12 +257,12 @@ var astar = {
         path = path[0];
         var cur_from = path;
         var ret_path = [];
-        while (cur_from !== null && cur_from.node !== null) {
+        do {
             
             var cur_node = {"name": cur_from.name, "node": cur_from.node};
             cur_from = cur_from.from;
             ret_path.push(cur_node);
-        }
+        } while (cur_from !== null && cur_from.node !== null);
         return ret_path.reverse();
     },
     neighbors: function(node, map) {
@@ -275,13 +273,14 @@ var astar = {
         for (var i = 0; i < map.length; i++) {
             if (map[i].start.x == node.node.x && map[i].start.y == node.node.y) { // If start equals the node, the map.end node must be a neighbor.
                 ret_neighbors.push({
+                    "name": map[i].name,
                     "node": map[i].end,
                     "g": (typeof node.g == 'undefined' ? 0 : node.g),
-                    "f": (typeof node.f == 'undefined' ? 0 : node.f),
-                    "name": map[i].name
+                    "f": (typeof node.f == 'undefined' ? 0 : node.f)
                 });
             }
         }
+        console.log(ret_neighbors.length);
         return ret_neighbors;
     },
     /**
