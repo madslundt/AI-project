@@ -21,6 +21,7 @@ $(function() {
     canvas.width = document.getElementById('container').clientWidth;
     canvas.height = document.getElementById('container').clientHeight;
 });
+
 /**
  * Parse a map into a list
  * @param  string text
@@ -67,9 +68,9 @@ var parse = {
                 svalue[3] == parseInt(svalue[3]) && svalue[4] == parseInt(svalue[4])) {
                 var street = {
                     "id": i,
-                    "start": [svalue[0], svalue[1]],
+                    "start": {"x": svalue[0], "y": svalue[1]},
                     "name": svalue[2],
-                    "end": [svalue[3], svalue[4]]
+                    "end": {"x": svalue[3], "y": svalue[4]}
                 }
                 // Add coordinates to the street.
                 ret_json.push(street);
@@ -82,8 +83,8 @@ var parse = {
         $('.start_select').html('');
         $('.goal_select').html('');
         for (var i = 0; i < map.length; i++) {
-            $('.start_select').append('<option value="' + i + '">(' + map[i].start[0] + ', ' + map[i].start[1] + ')</option>');
-            $('.goal_select').append('<option value="' + i + '">(' + map[i].start[0] + ', ' + map[i].start[1] + ')</option>');
+            $('.start_select').append('<option value="' + i + '">(' + map[i].start.x + ', ' + map[i].start.y + ')</option>');
+            $('.goal_select').append('<option value="' + i + '">(' + map[i].start.x + ', ' + map[i].start.y + ')</option>');
         }
         if (map.length < 1) {
             $('.start_select').html('<option>No nodes</option>');
@@ -123,35 +124,40 @@ var astar = {
         var node = {
             "node": start,
             "g": 0,
-            "f": this.heuristic(start, goal)
-        }
+            "f": this.heuristic(start, goal),
+            "from": null
+        };
         openset.push(node);
 
-        var current_path = [];
         var ret = false;
         var count = 0;
         var current;
         var currentIndex;
+        var current_path = [];
         while (openset.length > 0) {
             currentIndex = 0;
             current = openset[currentIndex];
             for (var i = 1; i < openset.length; i++) { // Finding lowest f value in openset.
                 if (openset[i].f < current.f) {
-                    current = openset[i];
                     currentIndex = i;
                 }
             }
+
+            current = openset[currentIndex];
+
+            // Checking if we are at the goal
+            if (openset[currentIndex].node.x == goal.x && openset[currentIndex].node.y == goal.y) {
+                current_path = this.pathTo(current);
+                ret = true;
+                break;
+            }
+
+            
+
             if (debug) {
                 console.log('\n::::::::::::::::' + count + ':::::::::::::::');
                 console.log('--------------Current node-----------------');
-                console.log("(" + current.node[0] + ", " + current.node[1] + ") \t f: " + current.f + " \t g: " + current.g + ' \t h: ' + this.heuristic(current.node, goal));
-            }
-            // Checking if we are at the goal
-            if (current.node[0] == goal[0] && current.node[1] == goal[1]) {
-                // Maybe draw to the map
-                current_path.push(current);
-                ret = true;
-                break;
+                console.log("(" + current.node.x + ", " + current.node.y + ") \t f: " + current.f + " \t g: " + current.g + ' \t h: ' + this.heuristic(current.node, goal));
             }
 
             // Remove current from openset.
@@ -165,7 +171,7 @@ var astar = {
             for (i = 0; i < neighbors.length; i++) {
                 if (this.isNodeInList(neighbors[i].node, closedset)) {
                     if (debug) {
-                        console.log('\n(' + neighbors[i].node[0] + ', ' + neighbors[i].node[1] + ') \t Neighbor is already visited\n');
+                        console.log('\n(' + neighbors[i].node.x + ', ' + neighbors[i].node.y + ') \t Neighbor is already visited\n');
                     }
                     continue;
                 }
@@ -176,20 +182,15 @@ var astar = {
                     var tentative_g_score = current.g + this.distanceBetween(current, neighbors[i]);
                     neighbors[i].f = neighbors[i].g + this.heuristic(neighbors[i].node, goal);
                     tentativeBool = true;
-                    if (debug) {
-                        console.log('(' + neighbors[i].node[0] + ', ' + neighbors[i].node[1] + ')');
-                        console.log('pushed to openset.\n');
-                    }
-
                 } else if (tentative_g_score < neighbors[i].g) { // If neighbor is not in openset
                     tentativeBool = true;
                 }
 
                 if (tentativeBool) {
+                    neighbors[i].from = current;
                     neighbors[i].g = tentative_g_score;
-                    current_path.push(current);
                     if (debug) {
-                        console.log('(' + neighbors[i].node[0] + ', ' + neighbors[i].node[1] + ') \t f: ' + neighbors[i].f + ' \t g: ' + neighbors[i].g + ' \t h: ' + this.heuristic(neighbors[i].node, goal));
+                        console.log('(' + neighbors[i].node.x + ', ' + neighbors[i].node.y + ') \t f: ' + neighbors[i].f + ' \t g: ' + neighbors[i].g + ' \t h: ' + this.heuristic(neighbors[i].node, goal));
                         console.log('added to currentpath.\n');
                     }
                 }
@@ -206,13 +207,11 @@ var astar = {
         if (ret) {
             console.log("\nPath found");
             if (debug) {
+                console.log('Current path:');
                 console.log(current_path);
-                for (var i = 0; i < current_path.length; i++) {
-                    console.log("(" + current_path[i].node[0] + ", " + current_path[i].node[1] + ") \t f: " + current_path[i].f + " \t g: " + current_path[i].g + ' \t h: ' + this.heuristic(current_path[i].node, goal));
-                }
-
             }
             draw.drawRoute(current_path, map);
+            return current_path;
         } else {
             alert("Program terminated. Could not find a path");
             console.log("Program terminated. Could not find a path");
@@ -220,17 +219,36 @@ var astar = {
 
 
     },
+    pathTo: function(node){
+        var curr = node;
+        var path = [];
+        while(curr) {
+            path.push(curr);
+            curr = curr.from;
+        }
+        path = path[0];
+        var cur_from = path;
+        var ret_path = [];
+        while (cur_from !== null && cur_from.node !== null) {
+            
+            var cur_node = {"name": cur_from.name, "node": cur_from.node};
+            cur_from = cur_from.from;
+            ret_path.push(cur_node);
+        }
+        return ret_path.reverse();
+    },
     neighbors: function(node, map) {
         var ret_neighbors = [];
         if (map.length < 1) {
             return ret_neighbors;
         }
         for (var i = 0; i < map.length; i++) {
-            if (map[i].start[0] == node.node[0] && map[i].start[1] == node.node[1]) { // If start equals the node, the map.end node must be a neighbor.
+            if (map[i].start.x == node.node.x && map[i].start.y == node.node.y) { // If start equals the node, the map.end node must be a neighbor.
                 ret_neighbors.push({
                     "node": map[i].end,
                     "g": (typeof node.g == 'undefined' ? 0 : node.g),
-                    "f": (typeof node.f == 'undefined' ? 0 : node.f)
+                    "f": (typeof node.f == 'undefined' ? 0 : node.f),
+                    "name": map[i].name
                 });
             }
         }
@@ -240,21 +258,21 @@ var astar = {
      * Manhatten
      */
     heuristic: function(start, goal) {
-        var d1 = Math.abs(start[0] - goal[0]);
-        var d2 = Math.abs(start[1] - goal[1]);
+        var d1 = Math.abs(start.x - goal.x);
+        var d2 = Math.abs(start.y - goal.y);
 
         return d1 + d2;
     },
     distanceBetween: function(start, goal) {
-        var x = start.node[0] - goal.node[0];
-        var y = start.node[1] - goal.node[1];
+        var x = start.node.x - goal.node.x;
+        var y = start.node.y - goal.node.y;
 
         return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 
     },
     isNodeInList: function(node, list) {
         for (var i = 0; i < list.length; i++) {
-            if (list[i].node[0] == node[0] && list[i].node[1] == node[1]) {
+            if (list[i].node.x == node.x && list[i].node.y == node.y) {
                 return true;
             }
         }
@@ -331,14 +349,14 @@ var draw = {
         // Get max
         var x_max = 0;
         var y_max = 0;
-        var x_min = map[0].start[0];
-        var y_min = map[0].start[1];
+        var x_min = map[0].start.x;
+        var y_min = map[0].start.y;
 
         for (var i = 0; i < map.length; i++) {
-            x_max = Math.max(map[i].start[0], map[i].end[0], x_max);
-            y_max = Math.max(map[i].start[1], map[i].end[1], y_max);
-            x_min = Math.min(map[i].start[0], map[i].end[0], x_min);
-            y_min = Math.min(map[i].start[1], map[i].end[1], y_min);
+            x_max = Math.max(map[i].start.x, map[i].end.x, x_max);
+            y_max = Math.max(map[i].start.y, map[i].end.y, y_max);
+            x_min = Math.min(map[i].start.x, map[i].end.x, x_min);
+            y_min = Math.min(map[i].start.y, map[i].end.y, y_min);
         }
         var incX = canvas.width / x_max;
         var incY = canvas.height / y_max;
@@ -346,10 +364,10 @@ var draw = {
         this.infobar(canvas, incX, incY, x_min, y_min, add, radius);
         for (var i = 0; i < map.length; i++) {
 
-            var x1 = ((map[i].start[0] > 0) ? (map[i].start[0] - x_min) : 1);
-            var y1 = ((map[i].start[1] > 0) ? (map[i].start[1] - y_min) : 1);
-            var x2 = ((map[i].end[0] > 0) ? (map[i].end[0] - x_min) : 1);
-            var y2 = ((map[i].end[1] > 0) ? (map[i].end[1] - y_min) : 1);
+            var x1 = ((map[i].start.x > 0) ? (map[i].start.x - x_min) : 1);
+            var y1 = ((map[i].start.y > 0) ? (map[i].start.y - y_min) : 1);
+            var x2 = ((map[i].end.x > 0) ? (map[i].end.x - x_min) : 1);
+            var y2 = ((map[i].end.y > 0) ? (map[i].end.y - y_min) : 1);
 
             x1 += add;
             x2 += add;
@@ -405,23 +423,23 @@ var draw = {
         // Get max
         var x_max = 0;
         var y_max = 0;
-        var x_min = map[0].start[0];
-        var y_min = map[0].start[1];
+        var x_min = map[0].start.x;
+        var y_min = map[0].start.y;
 
         for (var i = 0; i < map.length; i++) {
-            x_max = Math.max(map[i].start[0], map[i].end[0], x_max);
-            y_max = Math.max(map[i].start[1], map[i].end[1], y_max);
-            x_min = Math.min(map[i].start[0], map[i].end[0], x_min);
-            y_min = Math.min(map[i].start[1], map[i].end[1], y_min);
+            x_max = Math.max(map[i].start.x, map[i].end.x, x_max);
+            y_max = Math.max(map[i].start.y, map[i].end.y, y_max);
+            x_min = Math.min(map[i].start.x, map[i].end.x, x_min);
+            y_min = Math.min(map[i].start.y, map[i].end.y, y_min);
         }
         var incX = canvas.width / x_max;
         var incY = canvas.height / y_max;
         var add = 5;
         for (i = 0; i < path.length - 1; i++) {
-            var x1 = ((path[i].node[0] > 0) ? (path[i].node[0] - x_min) : 1);
-            var y1 = ((path[i].node[1] > 0) ? (path[i].node[1] - y_min) : 1);
-            var x2 = ((path[i + 1].node[0] > 0) ? (path[i + 1].node[0] - x_min) : 1);
-            var y2 = ((path[i + 1].node[1] > 0) ? (path[i + 1].node[1] - y_min) : 1);
+            var x1 = ((path[i].node.x > 0) ? (path[i].node.x - x_min) : 1);
+            var y1 = ((path[i].node.y > 0) ? (path[i].node.y - y_min) : 1);
+            var x2 = ((path[i + 1].node.x > 0) ? (path[i + 1].node.x - x_min) : 1);
+            var y2 = ((path[i + 1].node.y > 0) ? (path[i + 1].node.y - y_min) : 1);
 
             x1 += add;
             y1 += add;
@@ -461,7 +479,9 @@ var draw = {
                 context.fill();
                 context.stroke();
                 context.closePath();
-            } else if (i == (path.length - 2)) {
+            } 
+            if (i == (path.length - 2)) {
+                console.log('draw');
                 context.beginPath();
                 context.arc(x2, y2, (radius * 2), 0, 2 * Math.PI, false);
                 context.fillStyle = '#a00';
