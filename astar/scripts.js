@@ -4,7 +4,8 @@ $(function() {
     var canvas = document.getElementById('mapCanvas');
     $('#submit').click(function() {
         map = parse.parseMap($('#map').val());
-        draw.drawMap(canvas, map);
+        if (map.length > 0)
+            draw.drawMap(canvas, map);
     });
 
     $('#findPath').click(function() {
@@ -20,7 +21,33 @@ $(function() {
 
     canvas.width = document.getElementById('container').clientWidth;
     canvas.height = document.getElementById('container').clientHeight;
+
+    document.getElementById('upload').addEventListener('change', readSingleFile, false);
+
+    function readSingleFile(evt) {
+        //Retrieve the first (and only!) File from the FileList object
+        var f = evt.target.files[0]; 
+
+        if (f) {
+            var r = new FileReader();
+            r.onload = function(e) { 
+                var contents = e.target.result;
+                if (map = parse.parseMap(contents)) {
+                    console.log(map);
+                    draw.drawMap(canvas, map);
+                } else {
+                    console.log('Wrong file');
+                    alert("Wrong file");
+                }
+            };
+            r.readAsText(f);
+        } else { 
+            alert("Failed to load file");
+        }
+    }
 });
+
+
 
 /**
  * Parse a map into a list
@@ -75,6 +102,9 @@ var parse = {
                 // Add coordinates to the street.
                 ret_json.push(street);
             }
+        }
+        if (ret_json.length < 1) {
+            return false;
         }
         this.setSelector(ret_json);
         return ret_json;
