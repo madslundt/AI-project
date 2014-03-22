@@ -16,11 +16,32 @@ $(function() {
         var goal = document.getElementById('goal_select');
         var goalval = goal.options[goal.selectedIndex].value;
         console.log("To: (" + map[goalval].end.x + ", " + map[goalval].end.y + ")");
-        astar.search(map[startval], map[goalval].start, map, true);
+        var path = astar.search(map[startval], map[goalval].end, map, false);
+        $('#output').html('<thead>' +
+                    '<tr>' +
+                        '<th>#</th>' +
+                        '<th>Node</th>' +
+                        '<th>Street</th>' +
+                        '<th>f</th>' +
+                        '<th>g</th>' +
+                        '<th>h</th>' +
+                    '</tr>' +
+                '</thead>' +
+                '<tbody>');
+        console.log(path);
+        for (var i = 0; i < path.length; i++) {
+            $('#output').append('<tr>' +
+                        '<td>' + (i + 1) + '</td>' +
+                        '<td>(' + path[i].node.x + ', ' + path[i].node.y + ')</td>' +
+                        '<td>' + ((i > 0) ? path[i].name : '') + '</td>' +
+                        '<td>' + parseInt(path[i].f).toFixed(2) + '</td>' +
+                        '<td>' + parseInt(path[i].g).toFixed(2) + '</td>' +
+                        '<td>' + astar.heuristic(path[i].node, map[goalval].end) + '</td>' +
+                    '<tr>');
+        }
+        $('#output').append('</tbody>');
     });
-
-
-    canvas.width = document.getElementById('container').clientWidth;
+    canvas.width = document.getElementById('container').clientWidth - 15;
     canvas.height = document.getElementById('container').clientHeight;
 
     var fileupload = document.getElementById('upload');
@@ -53,8 +74,7 @@ $(function() {
                     console.log('Wrong file');
                     alert("Wrong file");
                 }
-            }
-
+            };
             reader.readAsText(file);
         } else {
             console.log('File not supported');

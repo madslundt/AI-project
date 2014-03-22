@@ -10,6 +10,7 @@ var astar = {
             console.clear();
             console.log('------------------------Find path---------------------------');
         }
+
         if (map.length < 1) {
             console.log('error');
             return;
@@ -117,9 +118,9 @@ var astar = {
     },
     nodeString: function(node, goal) {
         if (goal)
-            return '(' + node.node.x + ', ' + node.node.y + ') \t f: ' + node.f + ' \t g: ' + node.g + ' \t h: ' + this.heuristic(node.node, goal);
+            return '(' + node.node.x + ', ' + node.node.y + ') \t f: ' + node.f.toFixed(2) + ' \t g: ' + node.g.toFixed(2) + ' \t h: ' + this.heuristic(node.node, goal).toFixed(2);
         else
-            return '(' + node.node.x + ', ' + node.node.y + ') \t f: ' + node.f + ' \t g: ' + node.g;
+            return '(' + node.node.x + ', ' + node.node.y + ') \t f: ' + node.f.toFixed(2) + ' \t g: ' + node.g.toFixed(2);
     },
     pathTo: function(node) {
         var curr = node;
@@ -149,8 +150,10 @@ var astar = {
         if (map.length < 1) {
             return ret_neighbors;
         }
+        console.log('\n\n-------------------------');
         for (var i = 0; i < map.length; i++) {
             if (map[i].start.x == node.node.x && map[i].start.y == node.node.y) { // If start equals the node, the map.end node must be a neighbor.
+                console.log('true');
                 ret_neighbors.push({
                     "name": map[i].name,
                     "node": map[i].end,
@@ -158,6 +161,7 @@ var astar = {
                     "f": (typeof node.f == 'undefined' ? 0 : node.f)
                 });
             }
+            console.log('\n');
         }
         return ret_neighbors;
     },

@@ -12,7 +12,7 @@ var draw = {
             $('.infobar .clickposition').text(message);
         }, false);
 
-        $('.infobar .info').text(((map.length + 1) + ' nodes'));
+        $('.infobar .info').text(((map.length + 1) + ' edges'));
     },
     getMousePos: function(canvas, evt) {
         var rect = canvas.getBoundingClientRect();

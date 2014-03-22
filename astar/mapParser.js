@@ -45,13 +45,13 @@ var parse = {
                 var street = {
                     "id": i,
                     "start": {
-                        "x": svalue[0],
-                        "y": svalue[1]
+                        "x": parseInt(svalue[0]),
+                        "y": parseInt(svalue[1])
                     },
                     "name": svalue[2],
                     "end": {
-                        "x": svalue[3],
-                        "y": svalue[4]
+                        "x": parseInt(svalue[3]),
+                        "y": parseInt(svalue[4])
                     }
                 }
                 // Add coordinates to the street.
@@ -62,6 +62,7 @@ var parse = {
             return false;
         }
         this.setSelector(ret_json);
+        console.log(ret_json);
         return ret_json;
     },
     setSelector: function(map) {
@@ -69,7 +70,7 @@ var parse = {
         $('.goal_select').html('');
         for (var i = 0; i < map.length; i++) {
             $('.start_select').append('<option value="' + i + '">(' + map[i].start.x + ', ' + map[i].start.y + ')</option>');
-            $('.goal_select').append('<option value="' + i + '">(' + map[i].start.x + ', ' + map[i].start.y + ')</option>');
+            $('.goal_select').append('<option value="' + i + '">(' + map[i].end.x + ', ' + map[i].end.y + ')</option>');
         }
         if (map.length < 1) {
             $('.start_select').html('<option>No nodes</option>');
