@@ -199,7 +199,6 @@ var draw = {
                 context.closePath();
             }
             if (i == (path.length - 2)) {
-                console.log('draw');
                 context.beginPath();
                 context.arc(x2, y2, (radius * 2), 0, 2 * Math.PI, false);
                 context.fillStyle = '#a00';

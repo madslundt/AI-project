@@ -21,7 +21,7 @@ var astar = {
             "name": start.name,
             "node": start.start,
             "g": 0,
-            "f": this.heuristic(start, goal),
+            "f": this.heuristic(start.start, goal),
             "from": null
         };
         openset.push(node);
@@ -49,12 +49,10 @@ var astar = {
                 break;
             }
 
-
-            console.log(current);
             if (debug) {
                 console.log('\n::::::::::::::::' + count + ':::::::::::::::');
                 console.log('--------------Current node-----------------');
-                console.log("(" + current.node.x + ", " + current.node.y + ") \t f: " + current.f + " \t g: " + current.g + ' \t h: ' + this.heuristic(current.node, goal));
+                console.log('\t' + this.nodeString(current, goal));
             }
 
             // Remove current from openset.
@@ -62,13 +60,12 @@ var astar = {
             closedset.push(current);
             var neighbors = this.neighbors(current, map);
             if (debug) {
-                console.log('---------------Neighbors-------------------');
-                console.log(neighbors);
+                console.log('\n\t---------------Neighbors-------------------');
             }
             for (i = 0; i < neighbors.length; i++) {
                 if (this.isNodeInList(neighbors[i].node, closedset)) {
                     if (debug) {
-                        console.log('\n(' + neighbors[i].node.x + ', ' + neighbors[i].node.y + ') \t Neighbor is already visited\n');
+                        console.log('\t\t' + this.nodeString(neighbors[i], goal) +'\t Neighbor is already visited.');
                     }
                     continue;
                 }
@@ -87,13 +84,12 @@ var astar = {
                     neighbors[i].from = current;
                     neighbors[i].g = tentative_g_score;
                     if (debug) {
-                        console.log('(' + neighbors[i].node.x + ', ' + neighbors[i].node.y + ') \t f: ' + neighbors[i].f + ' \t g: ' + neighbors[i].g + ' \t h: ' + this.heuristic(neighbors[i].node, goal));
-                        console.log('added to currentpath.\n');
+                        console.log('\t\t' + this.nodeString(neighbors[i], goal) + '\t added to current path');
                     }
                 }
             }
             if (debug) {
-                console.log('-----------------End while------------------\n');
+                console.log('\n-----------------End Current------------------\n');
             }
             if (count++ >= 100) {
                 console.log('Count reached.');
@@ -105,7 +101,10 @@ var astar = {
             console.log("\nPath found");
             if (debug) {
                 console.log('Current path:');
-                console.log(current_path);
+                console.log('\n');
+                for (var i = 0; i < current_path.length; i++) {
+                    console.log('\t' + this.nodeString(current_path[i], goal));
+                }
             }
             draw.drawRoute(current_path, map);
             return current_path;
@@ -116,8 +115,13 @@ var astar = {
 
 
     },
+    nodeString: function(node, goal) {
+        if (goal)
+            return '(' + node.node.x + ', ' + node.node.y + ') \t f: ' + node.f + ' \t g: ' + node.g + ' \t h: ' + this.heuristic(node.node, goal);
+        else
+            return '(' + node.node.x + ', ' + node.node.y + ') \t f: ' + node.f + ' \t g: ' + node.g;
+    },
     pathTo: function(node) {
-        console.log(node);
         var curr = node;
         var path = [];
         while (curr) {
@@ -131,7 +135,9 @@ var astar = {
 
             var cur_node = {
                 "name": cur_from.name,
-                "node": cur_from.node
+                "node": cur_from.node,
+                "g": cur_from.g,
+                "f": cur_from.f
             };
             cur_from = cur_from.from;
             ret_path.push(cur_node);
@@ -153,7 +159,6 @@ var astar = {
                 });
             }
         }
-        console.log(ret_neighbors.length);
         return ret_neighbors;
     },
     /**

@@ -11,15 +11,12 @@ $(function() {
     $('#findPath').click(function() {
         var start = document.getElementById('start_select');
         var startval = start.options[start.selectedIndex].value;
-        console.log("From: ");
-        console.log(map[startval].start);
+        console.log("From: (" + map[startval].start.x + ", " + map[startval].start.y + ")");
 
         var goal = document.getElementById('goal_select');
         var goalval = goal.options[goal.selectedIndex].value;
-        console.log("To: ");
-        console.log(map[goalval].end);
-        console.log(map);
-        astar.search(map[startval], map[goalval].start, map, false);
+        console.log("To: (" + map[goalval].end.x + ", " + map[goalval].end.y + ")");
+        astar.search(map[startval], map[goalval].start, map, true);
     });
 
 
