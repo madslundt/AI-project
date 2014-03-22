@@ -22,13 +22,26 @@ $(function() {
         astar.search(map[startval], map[goalval].start, map, false);
     });
 
+
     canvas.width = document.getElementById('container').clientWidth;
     canvas.height = document.getElementById('container').clientHeight;
 
     var fileupload = document.getElementById('upload');
+    var dropZone = document.getElementById('drop_zone');
+    dropZone.addEventListener('drop', fileupload_function, false);
+    dropZone.addEventListener('dragover', handleDragOver, false);
 
-    fileupload.addEventListener('change', function(e) {
-        var file = fileupload.files[0];
+
+    fileupload.addEventListener('change', fileupload_function, false);
+
+    function fileupload_function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        if (e.target.files)
+            var file = e.target.files[0];
+        else if (e.dataTransfer.files)
+            file = e.dataTransfer.files[0];
+
         var textType = /text.*/;
 
         if (file.type.match(textType)) {
@@ -50,8 +63,14 @@ $(function() {
             console.log('File not supported');
             alert('File not supported');
         }
-    });
+    }
 });
+
+function handleDragOver(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+}
 
 
 /**
@@ -100,9 +119,15 @@ var parse = {
                 svalue[3] == parseInt(svalue[3]) && svalue[4] == parseInt(svalue[4])) {
                 var street = {
                     "id": i,
-                    "start": {"x": svalue[0], "y": svalue[1]},
+                    "start": {
+                        "x": svalue[0],
+                        "y": svalue[1]
+                    },
                     "name": svalue[2],
-                    "end": {"x": svalue[3], "y": svalue[4]}
+                    "end": {
+                        "x": svalue[3],
+                        "y": svalue[4]
+                    }
                 }
                 // Add coordinates to the street.
                 ret_json.push(street);
@@ -179,7 +204,7 @@ var astar = {
                 break;
             }
 
-            
+
             console.log(current);
             if (debug) {
                 console.log('\n::::::::::::::::' + count + ':::::::::::::::');
@@ -246,11 +271,11 @@ var astar = {
 
 
     },
-    pathTo: function(node){
+    pathTo: function(node) {
         console.log(node);
         var curr = node;
         var path = [];
-        while(curr) {
+        while (curr) {
             path.push(curr);
             curr = curr.from;
         }
@@ -258,8 +283,11 @@ var astar = {
         var cur_from = path;
         var ret_path = [];
         do {
-            
-            var cur_node = {"name": cur_from.name, "node": cur_from.node};
+
+            var cur_node = {
+                "name": cur_from.name,
+                "node": cur_from.node
+            };
             cur_from = cur_from.from;
             ret_path.push(cur_node);
         } while (cur_from !== null && cur_from.node !== null);
@@ -508,7 +536,7 @@ var draw = {
                 context.fill();
                 context.stroke();
                 context.closePath();
-            } 
+            }
             if (i == (path.length - 2)) {
                 console.log('draw');
                 context.beginPath();
