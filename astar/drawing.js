@@ -2,13 +2,13 @@ var draw = {
     infobar: function(canvas, incX, incY, x_min, y_min, add, radius) {
         canvas.addEventListener('mousemove', function(evt) {
             var mousePos = draw.getMousePos(canvas, evt);
-            var message = 'X: ' + parseInt((mousePos.x / incX) + x_min - add - (radius / incX * 2)) + ', Y: ' + parseInt((mousePos.y / incY) + y_min - add - (radius / incY * 2));
+            var message = 'X: ' + parseInt((mousePos.x / incX) + x_min - (radius / incX * 2)) + ', Y: ' + parseInt((mousePos.y / incY) + y_min - (add / 2) - (radius / incY));
             $('.infobar .position').text(message);
         }, false);
 
         canvas.addEventListener('click', function(evt) {
             var mousePos = draw.getMousePos(canvas, evt);
-            var message = 'X: ' + parseInt((mousePos.x / incX) + x_min - add - (radius / incX * 2)) + ', Y: ' + parseInt((mousePos.y / incY) + y_min - add - (radius / incY * 2));
+            var message = 'X: ' + parseInt((mousePos.x / incX) + x_min - (radius / incX * 2)) + ', Y: ' + parseInt((mousePos.y / incY) + y_min - (add / 2) - (radius / incY));
             $('.infobar .clickposition').text(message);
         }, false);
 
@@ -78,23 +78,22 @@ var draw = {
         }
         var incX = canvas.width / x_max;
         var incY = canvas.height / y_max;
-        var add = 5;
+        var add = 10;
         this.infobar(canvas, incX, incY, x_min, y_min, add, radius);
         for (var i = 0; i < map.length; i++) {
-
             var x1 = ((map[i].start.x > 0) ? (map[i].start.x - x_min) : 1);
             var y1 = ((map[i].start.y > 0) ? (map[i].start.y - y_min) : 1);
             var x2 = ((map[i].end.x > 0) ? (map[i].end.x - x_min) : 1);
             var y2 = ((map[i].end.y > 0) ? (map[i].end.y - y_min) : 1);
 
-            x1 += add;
-            x2 += add;
-            y1 += add;
-            y2 += add;
             x1 *= incX;
             x2 *= incX;
             y1 *= incY;
             y2 *= incY;
+            x1 += add;
+            x2 += add;
+            y1 += add;
+            y2 += add;
 
             var centerX = ((parseInt(x1) + parseInt(x2)) / 2);
             var centerY = (parseInt(y1) + parseInt(y2)) / 2;
@@ -152,23 +151,20 @@ var draw = {
         }
         var incX = canvas.width / x_max;
         var incY = canvas.height / y_max;
-        var add = 5;
+        var add = 10;
         for (i = 0; i < path.length - 1; i++) {
             var x1 = ((path[i].node.x > 0) ? (path[i].node.x - x_min) : 1);
             var y1 = ((path[i].node.y > 0) ? (path[i].node.y - y_min) : 1);
             var x2 = ((path[i + 1].node.x > 0) ? (path[i + 1].node.x - x_min) : 1);
             var y2 = ((path[i + 1].node.y > 0) ? (path[i + 1].node.y - y_min) : 1);
-
-            x1 += add;
-            y1 += add;
-            x2 += add;
-            y2 += add;
-
             x1 *= incX;
             y1 *= incY;
             x2 *= incX;
             y2 *= incY;
-
+            x1 += add;
+            y1 += add;
+            x2 += add;
+            y2 += add;
 
             // Drawing lines / edges with arrow head
             var ax = x2 - (radius - 1);
