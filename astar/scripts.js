@@ -49,7 +49,7 @@ $(function() {
         var goal = document.getElementById('goal_select');
         var goalval = goal.options[goal.selectedIndex].value;
         console.log("To: (" + map[goalval].end.x + ", " + map[goalval].end.y + ")");
-        var path = search.rbfs(map[startval], map[goalval].end, map);
+        var path = search.rbfs(map[startval], map[goalval].end, map, true);
         $('#output').html('<thead>' +
                     '<tr>' +
                         '<th>#</th>' +

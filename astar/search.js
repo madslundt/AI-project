@@ -43,7 +43,7 @@ var search = {
             current = openset[currentIndex];
 
             // Checking if we are at the goal
-            if (openset[currentIndex].node.x == goal.x && openset[currentIndex].node.y == goal.y) {
+            if (this.isNodeEquals(current.node, goal)) {
                 current_path = this.pathTo(current);
                 ret = true;
                 break;
@@ -146,6 +146,7 @@ var search = {
         var cur_from = node;
         var ret_path = [];
         do {
+            console.log(cur_from);
             var cur_node = {
                 "name": cur_from.name,
                 "node": cur_from.node,
@@ -210,20 +211,33 @@ var search = {
         }
         return false;
     },
-    rbfs_function: function(goal, node, map, limit) {
+    isNodeEquals: function(node1, node2) {
+        return parseInt(node1.x) == parseInt(node2.x) && parseInt(node1.y) == parseInt(node2.y);
+    },
+    rbfs_function: function(goal, node, map, limit, debug) {
         // Is current node in goal state.
-        if (goal.x == node.x && goal.y == node.y) {
-            return {"status": true, "result": node};
+        if (debug) {
+            console.log('---------------Current-------------------');
+            console.log(this.nodeString(node, goal));
+        }
+        if (this.isNodeEquals(node.node, goal)) {
+            return node;
         }
         var successors = [];
         var neighbors = this.neighbors(node, goal, map);
+        if (debug) {
+            console.log('\n\t---------------Neighbors-------------------');
+        }
         for (var i = 0; i < neighbors.length; i++) {
             neighbors[i].f = Math.max(neighbors[i].f, node.f);
             successors.push(neighbors[i]);
+            if (debug) {
+                console.log('\t' + this.nodeString(neighbors[i], goal));
+            }
         }
         // If node has no neighbors
         if (successors.length < 1) {
-            return {"status": false};
+            return false;
         }
         
         var best = [];
@@ -232,16 +246,19 @@ var search = {
         }
         // Sorting f values - smallest first
         best = best.sort(function(a,b){return a.f-b.f});
+
+        if (debug) {
+            console.log('\tBest: ' + this.nodeString(best[0], goal) + '\tvs limit: ' + limit);
+            console.log('---------------End Current-------------------\n');
+        }
         if (best[0].f > limit) {
-            return {"status": false};
+            return false;
         }
-        var ret = this.rbfs_function(goal, best[0], map, Math.min(limit, best[1].f));
-        if (ret.status) {
-            return {"status": true, "result": ret.result};
-        }
+        best[0].from = node;
+        this.rbfs_function(goal, best[0], map, Math.min(limit, (best.length > 1 ? best[1].f : best[0].f)), debug);
         
       },
-      rbfs: function(start, goal, map) {
+      rbfs: function(start, goal, map, debug) {
         var node = {
           "name": start.name,
           "node": start.start,
@@ -249,6 +266,17 @@ var search = {
           "f": this.heuristic(start.start, goal),
           "from": null
         };
-        return this.rbfs_function(goal, node, map, Infinity);
+        var path = this.rbfs_function(goal, node, map, Infinity, debug);
+        if (debug) {
+            console.log(path);
+        }
+        if (path) {
+            if (debug) {
+                console.log('Node found');
+                console.log(node);
+                console.log('---------------End Current-------------------\n');
+            }
+            return this.pathTo(path);
+        }
       }
 };
