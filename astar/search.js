@@ -7,7 +7,6 @@ var search = {
      */
     astar: function(start, goal, map, debug) {
         if (debug) {
-            console.clear();
             console.log('------------------------Find path---------------------------');
         }
 
@@ -163,10 +162,8 @@ var search = {
         if (map.length < 1) {
             return ret_neighbors;
         }
-        console.log('\n\n-------------------------');
         for (var i = 0; i < map.length; i++) {
             if (map[i].start.x == node.node.x && map[i].start.y == node.node.y) { // If start equals the node, the map.end node must be a neighbor.
-                console.log('true');
                 ret_neighbors.push({
                     "name": map[i].name,
                     "node": map[i].end,
@@ -174,7 +171,6 @@ var search = {
                     "f": node.g + this.heuristic(node.node, goal)
                 });
             }
-            console.log('\n');
         }
         return ret_neighbors;
     },
