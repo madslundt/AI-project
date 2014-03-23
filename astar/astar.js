@@ -1,9 +1,9 @@
 var astar = {
     /**
-     * [search description]
-     * @param  Node-object start [description]
-     * @param  [x, y] end   [description]
-     * @param  [map] map   [description]
+     * A star search algorithm
+     * @param  {(x,y)-coordinates} start [description]
+     * @param  {(x,y)-coordinates} end   [description]
+     * @param  {Map from the parser} map   [description]
      */
     search: function(start, goal, map, debug) {
         if (debug) {
@@ -59,11 +59,14 @@ var astar = {
             // Remove current from openset.
             openset.splice(currentIndex, 1);
             closedset.push(current);
+
+            // Runs through the neighbors
             var neighbors = this.neighbors(current, map);
             if (debug) {
                 console.log('\n\t---------------Neighbors-------------------');
             }
             for (i = 0; i < neighbors.length; i++) {
+                // Has neighbor already been visited?
                 if (this.isNodeInList(neighbors[i].node, closedset)) {
                     if (debug) {
                         console.log('\t\t' + this.nodeString(neighbors[i], goal) +'\t Neighbor is already visited.');
@@ -72,15 +75,18 @@ var astar = {
                 }
 
                 var tentativeBool = false;
+                var tentative_g_score = current.g + this.distanceBetween(current.node, neighbors[i].node);
+                // Check if neighbor is in the openset or if it has lower g score.
                 if (!this.isNodeInList(neighbors[i].node, openset)) {
                     openset.push(neighbors[i]);
-                    var tentative_g_score = current.g + this.distanceBetween(current, neighbors[i]);
+                    
                     neighbors[i].f = neighbors[i].g + this.heuristic(neighbors[i].node, goal);
                     tentativeBool = true;
                 } else if (tentative_g_score < neighbors[i].g) { // If neighbor is not in openset
                     tentativeBool = true;
                 }
 
+                // Adds to current path
                 if (tentativeBool) {
                     neighbors[i].from = current;
                     neighbors[i].g = tentative_g_score;
@@ -92,14 +98,17 @@ var astar = {
             if (debug) {
                 console.log('\n-----------------End Current------------------\n');
             }
+
+            // If the loop stucks and can't find a route, it breaks out. Should not be triggered!
             if (count++ >= 100) {
                 console.log('Count reached.');
                 break;
             }
         } // End while
 
+        // If a route has been found.
         if (ret) {
-            console.log("\nPath found");
+            console.log("\nPath found in " + (count + 1) + ((count + 1 == 1) ? ' step' : ' steps'));
             if (debug) {
                 console.log('Current path:');
                 console.log('\n');
@@ -109,6 +118,7 @@ var astar = {
             }
             draw.drawRoute(current_path, map);
             return current_path;
+        // If a route has not been found.
         } else {
             alert("Program terminated. Could not find a path");
             console.log("Program terminated. Could not find a path");
@@ -116,24 +126,27 @@ var astar = {
 
 
     },
+    /**
+     * Returns a string of a node with its coordinates (x,y) and f, g and h values.
+     * @param  {node-object} node [description]
+     * @param  {(x,y)-coordinates} goal [description]
+     * @return {string}      [description]
+     */
     nodeString: function(node, goal) {
         if (goal)
             return '(' + node.node.x + ', ' + node.node.y + ') \t f: ' + node.f.toFixed(2) + ' \t g: ' + node.g.toFixed(2) + ' \t h: ' + this.heuristic(node.node, goal).toFixed(2);
         else
             return '(' + node.node.x + ', ' + node.node.y + ') \t f: ' + node.f.toFixed(2) + ' \t g: ' + node.g.toFixed(2);
     },
+    /**
+     * Returns the output path
+     * @param  {node-object} node [description]
+     * @return {list of node-objects}      [description]
+     */
     pathTo: function(node) {
-        var curr = node;
-        var path = [];
-        while (curr) {
-            path.push(curr);
-            curr = curr.from;
-        }
-        path = path[0];
-        var cur_from = path;
+        var cur_from = node;
         var ret_path = [];
         do {
-
             var cur_node = {
                 "name": cur_from.name,
                 "node": cur_from.node,
@@ -174,13 +187,25 @@ var astar = {
 
         return d1 + d2;
     },
+    /**
+     * Calculates the distance between start and goal
+     * @param  {(x,y)-coordinates} start [description]
+     * @param  {(x,y)-coordinates} goal  [description]
+     * @return {int}       [description]
+     */
     distanceBetween: function(start, goal) {
-        var x = start.node.x - goal.node.x;
-        var y = start.node.y - goal.node.y;
+        var x = start.x - goal.x;
+        var y = start.y - goal.y;
 
         return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 
     },
+    /**
+     * Checks if node is in a list
+     * @param  {node-object}  node [description]
+     * @param  {list of node-objects}  list [description]
+     * @return {Boolean}      [description]
+     */
     isNodeInList: function(node, list) {
         for (var i = 0; i < list.length; i++) {
             if (list[i].node.x == node.x && list[i].node.y == node.y) {

@@ -5,31 +5,33 @@
  * 
 [
     {
-        "start": [
-            10,
-            20
-        ],
+        "start": {
+            "x": 10,
+            "y": 20
+        },
         "name": "Vesterbrogade",
-        "goal": [
-            30,
-            40
-        ]
+        "goal": {
+            "x": 30,
+            "y": 40
+        }
     },
     {
-        "start": [
-            20,
-            20
-        ],
+        "start": {
+            "x": 20,
+            "y": 20
+        },
         "name": "Vesterbrogade",
-        "goal": [
-            30,
-            30
-        ]
+        "goal": {
+            "x": 30,
+            "y:" 30
+        }
     }
 ]
  */
 
-
+/**
+ * Parser
+ */
 var parse = {
     parseMap: function(text) {
         var split = text.split('\n');
@@ -54,7 +56,6 @@ var parse = {
                         "y": parseInt(svalue[4])
                     }
                 }
-                // Add coordinates to the street.
                 ret_json.push(street);
             }
         }
