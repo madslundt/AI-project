@@ -8,7 +8,7 @@ $(function() {
             draw.drawMap(canvas, map);
     });
 
-    $('#findPath').click(function() {
+    $('#findPath_astar').click(function() {
         var start = document.getElementById('start_select');
         var startval = start.options[start.selectedIndex].value;
         console.log("From: (" + map[startval].start.x + ", " + map[startval].start.y + ")");
@@ -16,7 +16,7 @@ $(function() {
         var goal = document.getElementById('goal_select');
         var goalval = goal.options[goal.selectedIndex].value;
         console.log("To: (" + map[goalval].end.x + ", " + map[goalval].end.y + ")");
-        var path = astar.search(map[startval], map[goalval].end, map, false);
+        var path = search.astar(map[startval], map[goalval].end, map, false);
         $('#output').html('<thead>' +
                     '<tr>' +
                         '<th>#</th>' +
@@ -36,11 +36,45 @@ $(function() {
                         '<td>' + ((i > 0) ? path[i].name : '') + '</td>' +
                         '<td>' + parseInt(path[i].f).toFixed(2) + '</td>' +
                         '<td>' + parseInt(path[i].g).toFixed(2) + '</td>' +
-                        '<td>' + astar.heuristic(path[i].node, map[goalval].end) + '</td>' +
+                        '<td>' + search.heuristic(path[i].node, map[goalval].end) + '</td>' +
                     '<tr>');
         }
         $('#output').append('</tbody>');
     });
+    $('#findPath_rbfs').click(function() {
+        var start = document.getElementById('start_select');
+        var startval = start.options[start.selectedIndex].value;
+        console.log("From: (" + map[startval].start.x + ", " + map[startval].start.y + ")");
+
+        var goal = document.getElementById('goal_select');
+        var goalval = goal.options[goal.selectedIndex].value;
+        console.log("To: (" + map[goalval].end.x + ", " + map[goalval].end.y + ")");
+        var path = search.rbfs(map[startval], map[goalval].end, map);
+        $('#output').html('<thead>' +
+                    '<tr>' +
+                        '<th>#</th>' +
+                        '<th>Node</th>' +
+                        '<th>Street</th>' +
+                        '<th>f</th>' +
+                        '<th>g</th>' +
+                        '<th>h</th>' +
+                    '</tr>' +
+                '</thead>' +
+                '<tbody>');
+        console.log(path);
+        for (var i = 0; i < path.length; i++) {
+            $('#output').append('<tr>' +
+                        '<td>' + (i + 1) + '</td>' +
+                        '<td>(' + path[i].node.x + ', ' + path[i].node.y + ')</td>' +
+                        '<td>' + ((i > 0) ? path[i].name : '') + '</td>' +
+                        '<td>' + parseInt(path[i].f).toFixed(2) + '</td>' +
+                        '<td>' + parseInt(path[i].g).toFixed(2) + '</td>' +
+                        '<td>' + search.heuristic(path[i].node, map[goalval].end) + '</td>' +
+                    '<tr>');
+        }
+        $('#output').append('</tbody>');
+    });
+
     canvas.width = document.getElementById('container').clientWidth - 15;
     canvas.height = document.getElementById('container').clientHeight;
 

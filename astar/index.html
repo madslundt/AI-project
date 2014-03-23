@@ -20,7 +20,8 @@
 				<select class="goal_select" id="goal_select">
 					<option>No nodes</option>
 				</select>
-				<input type="button" id="findPath" value="Find path" />
+				<input type="button" id="findPath_astar" value="Find path with A*" />
+				<input type="button" id="findPath_rbfs" value="Find path with RBFS" />
 			</div>
 			<canvas id="mapCanvas"></canvas>
 			<table id="output"></table>
@@ -33,6 +34,6 @@
 	</body>
 	<script type="text/javascript" src="scripts.js"></script>
 	<script type="text/javascript" src="mapParser.js"></script>
-	<script type="text/javascript" src="astar.js"></script>
+	<script type="text/javascript" src="search.js"></script>
 	<script type="text/javascript" src="drawing.js"></script>
 </html>
