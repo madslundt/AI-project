@@ -68,7 +68,7 @@ var search = {
                 // Has neighbor already been visited?
                 if (this.isNodeInList(neighbors[i].node, closedset)) {
                     if (debug) {
-                        console.log('\t\t' + this.nodeString(neighbors[i], goal) +'\t Neighbor is already visited.');
+                        console.log('\t\t' + this.nodeString(neighbors[i], goal) + '\t Neighbor is already visited.');
                     }
                     continue;
                 }
@@ -78,7 +78,7 @@ var search = {
                 // Check if neighbor is in the openset or if it has lower g score.
                 if (!this.isNodeInList(neighbors[i].node, openset)) {
                     openset.push(neighbors[i]);
-                    
+
                     neighbors[i].f = neighbors[i].g + this.heuristic(neighbors[i].node, goal);
                     tentativeBool = true;
                 } else if (tentative_g_score < neighbors[i].g) { // If neighbor is not in openset
@@ -117,7 +117,7 @@ var search = {
             }
             draw.drawRoute(current_path, map);
             return current_path;
-        // If a route has not been found.
+            // If a route has not been found.
         } else {
             alert("Program terminated. Could not find a path");
             console.log("Program terminated. Could not find a path");
@@ -239,13 +239,11 @@ var search = {
         if (successors.length < 1) {
             return false;
         }
-        
-        var best = [];
-        for (i = 0; i < successors.length; i++) {
-            best.push(successors[i]);
-        }
+
         // Sorting f values - smallest first
-        best = best.sort(function(a,b){return a.f-b.f});
+        best = successors.sort(function(a, b) {
+            return a.f - b.f
+        });
 
         if (debug) {
             console.log('\tBest: ' + this.nodeString(best[0], goal) + '\tvs limit: ' + limit);
@@ -255,16 +253,21 @@ var search = {
             return false;
         }
         best[0].from = node;
-        this.rbfs_function(goal, best[0], map, Math.min(limit, (best.length > 1 ? best[1].f : best[0].f)), debug);
-        
-      },
-      rbfs: function(start, goal, map, debug) {
+        var result = this.rbfs_function(goal, best[0], map, Math.min(limit, (best.length > 1 ? best[1].f : best[0].f)), debug);
+
+        if (result) {
+            return result;
+        } else {
+
+        }
+    },
+    rbfs: function(start, goal, map, debug) {
         var node = {
-          "name": start.name,
-          "node": start.start,
-          "g": 0,
-          "f": this.heuristic(start.start, goal),
-          "from": null
+            "name": start.name,
+            "node": start.start,
+            "g": 0,
+            "f": this.heuristic(start.start, goal),
+            "from": null
         };
         var path = this.rbfs_function(goal, node, map, Infinity, debug);
         if (debug) {
@@ -278,5 +281,5 @@ var search = {
             }
             return this.pathTo(path);
         }
-      }
+    }
 };

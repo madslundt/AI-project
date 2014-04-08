@@ -2,13 +2,13 @@ var draw = {
     infobar: function(canvas, incX, incY, x_min, y_min, add, radius) {
         canvas.addEventListener('mousemove', function(evt) {
             var mousePos = draw.getMousePos(canvas, evt);
-            var message = 'X: ' + parseInt((mousePos.x / incX) + x_min - (radius / incX * 2)) + ', Y: ' + parseInt((mousePos.y / incY) + y_min - (add / 2) - (radius / incY));
+            var message = 'X: ' + parseInt((mousePos.x / incX) + x_min - (radius / incX)) + ', Y: ' + parseInt((mousePos.y / incY) + y_min - (add / 2) - (radius / incY));
             $('.infobar .position').text(message);
         }, false);
 
         canvas.addEventListener('click', function(evt) {
             var mousePos = draw.getMousePos(canvas, evt);
-            var message = 'X: ' + parseInt((mousePos.x / incX) + x_min - (radius / incX * 2)) + ', Y: ' + parseInt((mousePos.y / incY) + y_min - (add / 2) - (radius / incY));
+            var message = 'X: ' + parseInt((mousePos.x / incX) + x_min + (radius / 2)) + ', Y: ' + parseInt((mousePos.y / incY) + y_min - (add / 2) - (radius / incY));
             $('.infobar .clickposition').text(message);
         }, false);
 
