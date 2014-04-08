@@ -77,5 +77,24 @@ var parse = {
             $('.start_select').html('<option>No nodes</option>');
             $('.goal_select').html('<option>No nodes</option>');
         }
+    },
+    parseCNF: function(text) {
+        var split = text.split('\n');
+        var ret_json = [];
+        var patt = new RegExp('^(([!]?\w)+\s*)+$');
+        for (var i = 0; i < split.length; i++) {
+            if (!patt.test(split[i])) {
+                continue;
+            }
+
+            // Splits on every if
+            // ex. a if b => a or !b
+            if (split[i].contains('if')) {
+
+            }
+        }
+    },
+    splitSpaces: function(text) {
+        var split = text.split(' ');
     }
 };
