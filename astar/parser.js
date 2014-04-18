@@ -2,7 +2,8 @@
  * Parse a map into a list
  * @param  string text
  *
- * 
+ *
+Map
 [
     {
         "start": {
@@ -87,11 +88,24 @@ var parse = {
                 continue;
             }
 
+            var insert = '';
+
             // Splits on every if
             // ex. a if b => a or !b
             if (split[i].contains('if')) {
+                var s = split[i].split('if');
+                var sr = splitSpaces(s[1]);
+                var text = '';
+                for (var j = 0; j < sr.length; j++) {
+                    text += '!' + sr[j];
+                }
+                insert = s[0]
+                ' | (' + text + ')';
+            } else {
 
             }
+            insert = insert.replace(/(\w)(\s)(\w)/g, '$1 | $3'); // Need to be improved p d c a & d | d & d & !p !f is replaced with p | d c | a & d | d & d & !p !f
+            ret_json.push(insert);
         }
     },
     splitSpaces: function(text) {
