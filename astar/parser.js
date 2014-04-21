@@ -82,33 +82,28 @@ var parse = {
     parseCNF: function(text) {
         var split = text.split('\n');
         var ret_json = [];
-        var patt = new RegExp('^(([!]?\w)+\s*)+$');
+        //var patt = new RegExp("(([!]?\w)+\s*)+", "i");
         for (var i = 0; i < split.length; i++) {
+            /*console.log(patt.test(split[i]));
             if (!patt.test(split[i])) {
+                console.log('No match');
                 continue;
-            }
-
-            var insert = '';
-
+            }*/
             // Splits on every if
             // ex. a if b => a or !b
-            if (split[i].contains('if')) {
+            split[i] = split[i].trim();
+            if (split[i].indexOf('if') != -1) {
                 var s = split[i].split('if');
-                var sr = splitSpaces(s[1]);
-                var text = '';
-                for (var j = 0; j < sr.length; j++) {
-                    text += '!' + sr[j];
-                }
-                insert = s[0]
-                ' | (' + text + ')';
+                var sr = s[1].trim().split(' ');
+                ret_json.push(s[0] + ' | !(' + sr.join(' | ') + ')');
             } else {
-
+                var s = split[i].trim();
+                var sr = split[i].trim().split(' ');
+                ret_json.push(sr.join(' | '));
             }
-            insert = insert.replace(/(\w)(\s)(\w)/g, '$1 | $3'); // Need to be improved p d c a & d | d & d & !p !f is replaced with p | d c | a & d | d & d & !p !f
-            ret_json.push(insert);
+            // insert = insert.replace(/(\w)(\s)(\w)/g, '$1 | $3'); // Need to be improved p d c a & d d & d & !p !f is replaced with p | d c | a & d | d & d & !p !f
+            
         }
-    },
-    splitSpaces: function(text) {
-        var split = text.split(' ');
+        return ret_json;
     }
 };
