@@ -82,33 +82,62 @@ var parse = {
     parseCNF: function(text) {
         var split = text.split('\n');
         var ret_json = [];
-        var patt = new RegExp('^(([!]?\w)+\s*)+$');
+        //var patt = new RegExp("(([!]?\w)+\s*)+", "i");
         for (var i = 0; i < split.length; i++) {
+            /*console.log(patt.test(split[i]));
             if (!patt.test(split[i])) {
+                console.log('No match');
                 continue;
-            }
+            }*/
 
-            var insert = '';
-
+            split[i] = split[i].trim();
+            var arr = [];
+            //if there is a 'if', means there is a right and left side
             // Splits on every if
             // ex. a if b => a or !b
-            if (split[i].contains('if')) {
-                var s = split[i].split('if');
-                var sr = splitSpaces(s[1]);
-                var text = '';
-                for (var j = 0; j < sr.length; j++) {
-                    text += '!' + sr[j];
-                }
-                insert = s[0]
-                ' | (' + text + ')';
-            } else {
+            // It only checks if ! is in the line. It doesn't work with multiple !.
+            if (split[i].indexOf('if') != -1) {
+                var arrpos = [];
+                var arrneg = [];
 
+                var s = split[i].split('if');
+                var sl = s[0].trim().split(' ');
+                for (var j = 0; j < sl.length; j++) {
+                    if (sl[i].indexOf('!') != -1) {
+                        arrneg.push(sl[j].substring(1));
+                    } else {
+                        arrpos.push(sl[j]);
+                    }
+                }
+                var sr = s[1].trim().split(' ');
+                //since the right hand side of 'if' should be negated the if statement have changed
+                for (var j = 0; j < sr.length; j++) {
+                    if (sr[i].indexOf('!') != -1) {
+                        arrpos.push(sr[j].substring(1));
+                    } else {
+                        arrneg.push(sr[j]);
+                    }
+                }
+            } else {
+                //if there only is a 'left' side
+                var arrpos = [];
+                var arrneg = [];
+                var s = split[i].trim();
+                var sr = split[i].trim().split(' ');
+                for (var j = 0; j < sr.length; j++) {
+                    if (sr[i].indexOf('!') != -1) {
+                        arrneg.push(sr[j].substring(1));
+                    } else {
+                        arrpos.push(sr[j]);
+                    }
+                }
             }
-            insert = insert.replace(/(\w)(\s)(\w)/g, '$1 | $3'); // Need to be improved p d c a & d | d & d & !p !f is replaced with p | d c | a & d | d & d & !p !f
-            ret_json.push(insert);
+            arr.push(arrpos);
+            arr.push(arrneg);
+            ret_json.push(arr);
+            // insert = insert.replace(/(\w)(\s)(\w)/g, '$1 | $3'); // Need to be improved p d c a & d d & d & !p !f is replaced with p | d c | a & d | d & d & !p !f
+            
         }
-    },
-    splitSpaces: function(text) {
-        var split = text.split(' ');
+        return ret_json;
     }
 };

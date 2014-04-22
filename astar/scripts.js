@@ -8,6 +8,19 @@ $(function() {
             draw.drawMap(canvas, map);
     });
 
+    $('#solveCNF').click(function() {
+        map = parse.parseCNF($('#map').val());
+        console.log(map);
+        if (map.length > 0)
+            $('.area').html(map.join('<br />'));
+
+        /*
+        a if b c
+        b if b
+
+        */
+    });
+
     $('#findPath_astar').click(function() {
         var start = document.getElementById('start_select');
         var startval = start.options[start.selectedIndex].value;
@@ -75,44 +88,48 @@ $(function() {
         $('#output').append('</tbody>');
     });
 
-    canvas.width = document.getElementById('container').clientWidth - 15;
-    canvas.height = document.getElementById('container').clientHeight;
+    if (canvas) {
+        canvas.width = document.getElementById('container').clientWidth - 15;
+        canvas.height = document.getElementById('container').clientHeight;
+    }
 
     var fileupload = document.getElementById('upload');
     var dropZone = document.getElementById('drop_zone');
-    dropZone.addEventListener('drop', fileupload_function, false);
-    dropZone.addEventListener('dragover', handleDragOver, false);
+    if (fileupload && dropZone) {
+        dropZone.addEventListener('drop', fileupload_function, false);
+        dropZone.addEventListener('dragover', handleDragOver, false);
 
 
-    fileupload.addEventListener('change', fileupload_function, false);
+        fileupload.addEventListener('change', fileupload_function, false);
 
-    function fileupload_function(e) {
-        e.stopPropagation();
-        e.preventDefault();
-        if (e.target.files)
-            var file = e.target.files[0];
-        else if (e.dataTransfer.files)
-            file = e.dataTransfer.files[0];
+        function fileupload_function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            if (e.target.files)
+                var file = e.target.files[0];
+            else if (e.dataTransfer.files)
+                file = e.dataTransfer.files[0];
 
-        var textType = /text.*/;
+            var textType = /text.*/;
 
-        if (file.type.match(textType)) {
-            var reader = new FileReader();
+            if (file.type.match(textType)) {
+                var reader = new FileReader();
 
-            reader.onload = function(e) {
-                var contents = reader.result;
-                map = parse.parseMap(contents);
-                if (map) {
-                    draw.drawMap(canvas, map);
-                } else {
-                    console.log('Wrong file');
-                    alert("Wrong file");
-                }
-            };
-            reader.readAsText(file);
-        } else {
-            console.log('File not supported');
-            alert('File not supported');
+                reader.onload = function(e) {
+                    var contents = reader.result;
+                    map = parse.parseMap(contents);
+                    if (map) {
+                        draw.drawMap(canvas, map);
+                    } else {
+                        console.log('Wrong file');
+                        alert("Wrong file");
+                    }
+                };
+                reader.readAsText(file);
+            } else {
+                console.log('File not supported');
+                alert('File not supported');
+            }
         }
     }
 });

@@ -1,39 +1,14 @@
 <!DOCTYPE html>
 <html>
-
-	<head>
-		<title>Test</title>
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js?ver=1.11.0"></script>
-		<link rel="stylesheet" href="style.css">
-	</head>
-	<body id="drop_zone">
+<head>
+	<title>AI-project</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+	<body>
 		<div class="container" id="container">
-			<textarea id="map"></textarea>
-			<input type="button" id="submit" value="Submit & draw" />
-			<input type="file" id="upload" value="Upload & draw" />
-			<div class="select">
-				<span>Start: </span>
-				<select class="start_select" id="start_select">
-					<option>No nodes</option>
-				</select>
-				<span>Goal: </span>
-				<select class="goal_select" id="goal_select">
-					<option>No nodes</option>
-				</select>
-				<input type="button" id="findPath_astar" value="Find path with A*" />
-				<input type="button" id="findPath_rbfs" value="Find path with RBFS" />
-			</div>
-			<canvas id="mapCanvas"></canvas>
-			<table id="output"></table>
+			<center>
+	            <a class="button" href="findpath.html">Find path with A*</a>
+				<a class="button" href="cnf.html">CNF</a>
+			</center>
 		</div>
-		<div class="infobar">
-			<div class="position"></div>
-			<div class="info"></div>
-			<div class="clickposition"></div>
-		</div>
-	</body>
-	<script type="text/javascript" src="scripts.js"></script>
-	<script type="text/javascript" src="parser.js"></script>
-	<script type="text/javascript" src="search.js"></script>
-	<script type="text/javascript" src="drawing.js"></script>
 </html>
