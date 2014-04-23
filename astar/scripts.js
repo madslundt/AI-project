@@ -13,7 +13,6 @@ $(function() {
         console.log(map);
         if (map.length > 0)
             $('.area').html(map.join('<br />'));
-
         /*
         a if b c
         b if b

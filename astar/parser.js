@@ -89,7 +89,6 @@ var parse = {
                 console.log('No match');
                 continue;
             }*/
-
             split[i] = split[i].trim();
             var arr = [];
             //if there is a 'if', means there is a right and left side
@@ -134,9 +133,7 @@ var parse = {
             }
             arr.push(arrpos);
             arr.push(arrneg);
-            ret_json.push(arr);
-            // insert = insert.replace(/(\w)(\s)(\w)/g, '$1 | $3'); // Need to be improved p d c a & d d & d & !p !f is replaced with p | d c | a & d | d & d & !p !f
-            
+            ret_json.push(arr);  
         }
         return ret_json;
     }
