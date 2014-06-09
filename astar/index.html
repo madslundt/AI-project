@@ -1,39 +1,23 @@
 <!DOCTYPE html>
 <html>
-
-	<head>
-		<title>Test</title>
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js?ver=1.11.0"></script>
-		<link rel="stylesheet" href="style.css">
-	</head>
-	<body id="drop_zone">
+<head>
+	<title>AI-project</title>
+	<link rel="stylesheet" href="style.css">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+	<body>
 		<div class="container" id="container">
-			<textarea id="map"></textarea>
-			<input type="button" id="submit" value="Submit & draw" />
-			<input type="file" id="upload" value="Upload & draw" />
-			<div class="select">
-				<span>Start: </span>
-				<select class="start_select" id="start_select">
-					<option>No nodes</option>
-				</select>
-				<span>Goal: </span>
-				<select class="goal_select" id="goal_select">
-					<option>No nodes</option>
-				</select>
-				<input type="button" id="findPath_astar" value="Find path with A*" />
-				<input type="button" id="findPath_rbfs" value="Find path with RBFS" />
-			</div>
-			<canvas id="mapCanvas"></canvas>
-			<table id="output"></table>
+			<h1>02180: Artificial Intelligence</h1>
+			<h2>HEUREKA</h2>
+			<center>
+	            <a class="button" href="findpath.html">Route finding</a>
+				<a class="button" href="cnf.html">Inference Engine</a>
+			</center>
+			<p>
+			This project contains a star algorithm found on <a href="http://en.wikipedia.org/wiki/A*_search_algorithm" target="_blank">Wikipedia</a>. A star is used for route finding in maps and to solve <a href="http://en.wikipedia.org/wiki/Conjunctive_normal_form" target="_blank">conjunctive normal form (clausal normal form)</a>.
+			</p>
+			<p>
+			Both the inference engine and route finding comes with a parser.
+			</p>
 		</div>
-		<div class="infobar">
-			<div class="position"></div>
-			<div class="info"></div>
-			<div class="clickposition"></div>
-		</div>
-	</body>
-	<script type="text/javascript" src="scripts.js"></script>
-	<script type="text/javascript" src="parser.js"></script>
-	<script type="text/javascript" src="search.js"></script>
-	<script type="text/javascript" src="drawing.js"></script>
 </html>
